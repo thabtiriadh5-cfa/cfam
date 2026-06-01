@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFAM — Connexion</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f2744 0%, #1a3a5c 50%, #0ea5e9 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Tajawal', sans-serif;
+    padding: 20px;
+  }
+  .login-card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px 40px;
+    width: 100%; max-width: 420px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+    text-align: center;
+  }
+  .logo { font-size: 3rem; margin-bottom: 8px; }
+  .app-name { font-size: 2rem; font-weight: 900; color: #0f2744; letter-spacing: 2px; }
+  .app-sub { font-size: 0.82rem; color: #64748b; margin-top: 4px; margin-bottom: 32px; line-height: 1.5; }
+  .form-group { text-align: left; margin-bottom: 16px; }
+  label { display: block; font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  input {
+    width: 100%; padding: 13px 16px;
+    border: 2px solid #e2e8f0; border-radius: 12px;
+    font-family: 'Tajawal', sans-serif; font-size: 1rem;
+    outline: none; transition: border-color 0.2s;
+    background: #f8fafc;
+  }
+  input:focus { border-color: #0ea5e9; background: white; }
+  .btn-login {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white; border: none; border-radius: 12px;
+    font-family: 'Tajawal', sans-serif; font-size: 1.05rem; font-weight: 800;
+    cursor: pointer; margin-top: 8px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(14,165,233,0.4);
+  }
+  .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(14,165,233,0.5); }
+  .btn-login:active { transform: translateY(0); }
+  .error-msg {
+    background: #fef2f2; border: 1.5px solid #fca5a5;
+    color: #dc2626; border-radius: 10px;
+    padding: 10px 14px; font-size: 0.88rem; font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .footer { margin-top: 28px; font-size: 0.75rem; color: #94a3b8; }
+  .ar { font-family: 'Cairo', sans-serif; direction: rtl; font-size: 0.8rem; color: #94a3b8; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="login-card">
+  <div class="logo">🏫</div>
+  <div class="app-name">CFAM</div>
+  <div class="app-sub">Gestion des Stagiaires<br>Centre de Formation et d'Apprentissage MSAKEN</div>
+  {% if error %}
+  <div class="error-msg">⚠️ {{ error }}</div>
+  {% endif %}
+  <form method="POST">
+    <div class="form-group">
+      <label>Identifiant Centre</label>
+      <input type="text" name="username" placeholder="Ex: 51541" autocomplete="username" required autofocus>
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn-login">🔐 Se connecter</button>
+  </form>
+  <div class="footer">
+    CFAM © 2024 — Tous droits réservés
+    <div class="ar">نظام إدارة المتربصين — مركز التكوين المهني مساكن</div>
+  </div>
+</div>
+</body>
+</html>

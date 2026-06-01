@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFAM — Gestion Stagiaires</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0f2744;
+  --accent: #0ea5e9;
+  --accent2: #22c55e;
+  --gold: #f59e0b;
+  --danger: #ef4444;
+  --border: #e2e8f0;
+  --bg: #f0f4f8;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --card: #ffffff;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, var(--primary) 0%, #1a3a5c 60%, #0284c7 100%);
+  color: white; padding: 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-inner {
+  max-width: 1400px; margin: 0 auto;
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.header-logo { font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; }
+.header-sub { font-size: 0.72rem; opacity: 0.75; }
+.header-centre { flex: 1; min-width: 0; }
+.header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.promo-selector {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  color: white; border-radius: 10px; padding: 8px 14px;
+  font-family: 'Tajawal', sans-serif; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; outline: none;
+}
+.promo-selector option { background: var(--primary); color: white; }
+.btn-hdr {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px; padding: 8px 14px; color: white;
+  font-family: 'Tajawal', sans-serif; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-hdr:hover { background: rgba(255,255,255,0.28); }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+.badge-green { background: rgba(34,197,94,0.25); color: #86efac; border: 1px solid rgba(34,197,94,0.4); }
+
+/* MAIN */
+.main { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+/* STATS */
+.stats-strip {
+  display: flex; gap: 12px; overflow-x: auto;
+  padding-bottom: 4px; margin-bottom: 20px;
+  scrollbar-width: thin;
+}
+.stat-card {
+  background: var(--card); border-radius: 14px;
+  padding: 14px 18px; min-width: 140px;
+  border: 1.5px solid var(--border);
+  cursor: pointer; transition: all 0.2s;
+  flex-shrink: 0;
+}
+.stat-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(14,165,233,0.15); }
+.stat-num { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
+.stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+.stat-group { font-size: 0.78rem; font-weight: 700; color: var(--accent); margin-top: 4px; }
+
+/* TOOLBAR */
+.toolbar {
+  background: var(--card); border-radius: 16px;
+  padding: 16px; border: 1.5px solid var(--border);
+  margin-bottom: 16px;
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+}
+.search-wrap { position: relative; flex: 1; min-width: 200px; }
+.search-wrap input {
+  width: 100%; padding: 10px 16px 10px 40px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  font-family: 'Tajawal', sans-serif; font-size: 0.92rem;
+  outline: none; background: #f8fafc;
+}
+.search-wrap input:focus { border-color: var(--accent); background: white; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+select.filter-sel {
+  padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px;
+  font-family: 'Tajawal', sans-serif; font-size: 0.88rem;
+  outline: none; background: #f8fafc; cursor: pointer;
+}
+select.filter-sel:focus { border-color: var(--accent); }
+
+/* BUTTONS */
+.btn { border: none; border-radius: 10px; padding: 9px 16px; font-family: 'Tajawal', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #0284c7; }
+.btn-success { background: var(--accent2); color: white; }
+.btn-success:hover { background: #16a34a; }
+.btn-gold { background: var(--gold); color: white; }
+.btn-gold:hover { background: #d97706; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-danger:hover { background: #dc2626; }
+.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm { padding: 6px 12px; font-size: 0.82rem; }
+
+/* TABLE */
+.table-wrap { background: var(--card); border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; }
+.table-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.count-badge { background: #eff6ff; color: var(--accent); border-radius: 20px; padding: 3px 12px; font-size: 0.8rem; font-weight: 700; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f8fafc; padding: 12px 14px; text-align: left; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 11px 14px; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8fafc; }
+.td-ar { font-family: 'Cairo', sans-serif; direction: rtl; }
+.td-cin { font-family: monospace; font-size: 0.82rem; background: #f1f5f9; padding: 2px 8px; border-radius: 6px; }
+.group-pill { border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+.g-em { background: #dbeafe; color: #1d4ed8; }
+.g-ieb { background: #dcfce7; color: #166534; }
+.g-mi { background: #f3e8ff; color: #7c3aed; }
+.g-pvc { background: #fff7ed; color: #c2410c; }
+.g-tsm { background: #fef9c3; color: #854d0e; }
+.g-sm { background: #fce7f3; color: #9d174d; }
+.g-default { background: #f1f5f9; color: #475569; }
+.actions { display: flex; gap: 6px; }
+.no-results { text-align: center; padding: 48px 20px; color: var(--text-muted); }
+.no-results .icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+/* PAGINATION */
+.pagination { display: flex; gap: 6px; align-items: center; justify-content: center; padding: 16px; flex-wrap: wrap; }
+.page-btn { padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 8px; background: white; cursor: pointer; font-family: 'Tajawal', sans-serif; font-size: 0.85rem; transition: all 0.15s; }
+.page-btn:hover { border-color: var(--accent); color: var(--accent); }
+.page-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+.page-info { font-size: 0.82rem; color: var(--text-muted); padding: 0 6px; }
+
+/* MODAL */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; backdrop-filter: blur(4px); }
+.overlay.open { display: flex; }
+.modal { background: white; border-radius: 20px; width: 100%; max-width: 680px; box-shadow: 0 24px 80px rgba(0,0,0,0.35); animation: slideUp 0.25s ease; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.modal-head { background: linear-gradient(135deg, var(--primary), #0ea5e9); color: white; padding: 20px 24px; border-radius: 20px 20px 0 0; display: flex; align-items: center; justify-content: space-between; }
+.modal-head h2 { font-size: 1rem; font-weight: 800; }
+.modal-close { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 1.1rem; border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+.modal-close:hover { background: rgba(255,255,255,0.35); }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* INFO GRID */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.info-item { background: #f8fafc; border-radius: 10px; padding: 10px 14px; }
+.info-item.full { grid-column: 1/-1; }
+.info-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+.info-value { font-size: 0.92rem; font-weight: 600; color: var(--text); }
+.info-value.ar { font-family: 'Cairo', sans-serif; direction: rtl; font-size: 1rem; }
+
+/* FORM */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1/-1; }
+.form-group label { font-size: 0.74rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.form-group input, .form-group select {
+  padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: 'Tajawal', sans-serif; font-size: 0.9rem; outline: none; background: white;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+
+/* ATTESTATION */
+.att-btns { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+
+/* PROMO MANAGER */
+.promo-item { display: flex; align-items: center; gap: 12px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+.promo-item:hover { border-color: var(--accent); }
+.promo-item.active { border-color: var(--accent2); background: #f0fdf4; }
+.promo-info { flex: 1; }
+.promo-label { font-weight: 700; color: var(--primary); }
+.promo-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+.badge-active { background: #dcfce7; color: #166534; border-radius: 20px; padding: 2px 10px; font-size: 0.72rem; font-weight: 700; margin-left: 8px; }
+
+/* TABS */
+.tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+.tab-btn { padding: 10px 18px; border: none; background: none; font-family: 'Tajawal', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+.tab-btn:hover { color: var(--primary); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* CONFIRM */
+.confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 3000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+.confirm-overlay.open { display: flex; }
+.confirm-box { background: white; border-radius: 16px; padding: 32px; max-width: 400px; width: 100%; text-align: center; }
+.confirm-box .ci { font-size: 2.5rem; margin-bottom: 12px; }
+.confirm-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; }
+.confirm-box p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+.confirm-btns { display: flex; gap: 10px; justify-content: center; }
+
+/* TOAST */
+#toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 8px 32px rgba(0,0,0,0.3); z-index: 9999; transition: opacity 0.3s; opacity: 0; pointer-events: none; white-space: nowrap; }
+#toast.show { opacity: 1; }
+
+/* PRINT */
+@media print {
+  body > *:not(#printPage) { display: none !important; }
+  #printPage { display: block !important; }
+}
+.print-page { display: none; }
+
+/* RESPONSIVE */
+@media (max-width: 700px) {
+  .header-inner { padding: 12px 16px; }
+  .main { padding: 12px; }
+  .info-grid, .form-grid { grid-template-columns: 1fr; }
+  table { font-size: 0.8rem; }
+  .td-ar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-centre">
+      <div class="header-logo">🏫 CFAM</div>
+      <div class="header-sub">{{ user.centre_name }} — {{ user.centre_code }}</div>
+    </div>
+    <div class="header-actions">
+      <select class="promo-selector" id="promoSelector" onchange="switchPromo(this.value)">
+        {% for p in promotions %}
+        <option value="{{ p.key }}" {% if current_promo and p.key == current_promo.key %}selected{% endif %}>
+          {{ p.emoji }} {{ p.label }}
+        </option>
+        {% endfor %}
+      </select>
+      <button class="btn-hdr" onclick="openPromoManager()">⚙️ Promotions</button>
+      <button class="btn-hdr" onclick="openAddStagiaire()">➕ Stagiaire</button>
+      <span class="badge badge-green" id="totalBadge">{{ stagiaires|length }} Stagiaires</span>
+      <button class="btn-hdr" onclick="location.href='/logout'">🚪 Déconnexion</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- STATS -->
+  <div class="stats-strip" id="statsStrip"></div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Rechercher par nom, prénom, CIN..." oninput="onSearch()">
+    </div>
+    <select class="filter-sel" id="groupFilter" onchange="onSearch()">
+      <option value="">Tous les groupes</option>
+      {% for g in groups %}<option value="{{ g }}">{{ g }}</option>{% endfor %}
+    </select>
+    <select class="filter-sel" id="specFilter" onchange="onSearch()">
+      <option value="">Toutes les spécialités</option>
+      {% for s in specs %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-outline btn-sm" onclick="clearFilters()">✕ Effacer</button>
+    <button class="btn btn-success btn-sm" onclick="printListGroupe()">📋 Liste nominative</button>
+    <button class="btn btn-primary btn-sm" onclick="printSelected('inscription')">🖨️ Attestations</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-head">
+      <input type="checkbox" id="checkAll" onchange="toggleAll(this)">
+      <span class="count-badge" id="countBadge">{{ stagiaires|length }}</span>
+      <span style="font-size:0.82rem;color:var(--text-muted)">stagiaires affichés</span>
+      <button class="btn btn-outline btn-sm" onclick="selectAll()" style="margin-left:auto">☑ Tout sélectionner</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px"></th>
+            <th>#</th>
+            <th>Nom & Prénom</th>
+            <th class="td-ar">الاسم واللقب</th>
+            <th>CIN</th>
+            <th>Groupe</th>
+            <th>Date Naiss.</th>
+            <th>Spécialité</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2 id="modalTitle">Fiche Stagiaire</h2>
+        <div style="opacity:0.8;font-size:0.82rem;margin-top:2px" id="modalSubTitle"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-grid" id="infoGrid"></div>
+      <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
+        <div style="font-weight:700;margin-bottom:10px;font-size:0.9rem;">🖨️ Générer une Attestation</div>
+        <div class="att-btns">
+          <button class="btn btn-primary btn-sm" onclick="printAttestation('inscription')">📋 Attestation d'Inscription — شهادة ترسيم</button>
+          <button class="btn btn-success btn-sm" onclick="printAttestation('presence')">✅ Attestation de Présence — شهادة حضور</button>
+          <button class="btn btn-gold btn-sm" onclick="printAttestation('reussite')">🏆 Attestation de Réussite — شهادة نجاح</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" onclick="confirmDeleteStagiaire()">🗑 Supprimer</button>
+      <button class="btn btn-outline btn-sm" onclick="closeModal('detailModal')">Fermer</button>
+      <button class="btn btn-primary btn-sm" onclick="openEditStagiaire()">✏️ Modifier</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT STAGIAIRE MODAL -->
+<div class="overlay" id="stagModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h2 id="stagModalTitle">➕ Ajouter un Stagiaire</h2></div>
+      <button class="modal-close" onclick="closeModal('stagModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editStagId">
+      <div class="form-grid">
+        <div class="form-group"><label>Nom (FR)</label><input id="f_nom" placeholder="BEN ALI" style="text-transform:uppercase"></div>
+        <div class="form-group"><label>Prénom (FR)</label><input id="f_prenom" placeholder="AHMED" style="text-transform:uppercase"></div>
+        <div class="form-group"><label>اللقب</label><input id="f_nom_ar" dir="rtl" placeholder="بن علي"></div>
+        <div class="form-group"><label>الاسم</label><input id="f_prenom_ar" dir="rtl" placeholder="أحمد"></div>
+        <div class="form-group"><label>CIN</label><input id="f_cin" placeholder="12345678"></div>
+        <div class="form-group"><label>Genre</label>
+          <select id="f_genre"><option>Garçon</option><option>Fille</option></select>
+        </div>
+        <div class="form-group"><label>Date de naissance</label><input id="f_naiss" placeholder="2005/01/15"></div>
+        <div class="form-group"><label>Lieu de naissance</label><input id="f_lieu" placeholder="Msaken"></div>
+        <div class="form-group"><label>Date entrée</label><input id="f_entree" placeholder="2024/09/16"></div>
+        <div class="form-group"><label>Date sortie</label><input id="f_sortie" placeholder="2026/06/30"></div>
+        <div class="form-group full"><label>Spécialité (AR)</label><input id="f_spec" dir="rtl" placeholder="كهربائي ميكانيكي"></div>
+        <div class="form-group"><label>Groupe</label><input id="f_groupe" placeholder="EM 75"></div>
+        <div class="form-group"><label>Niveau scolaire</label><input id="f_niveau" placeholder="CAP"></div>
+        <div class="form-group"><label>Téléphone</label><input id="f_tel" placeholder="20000000"></div>
+        <div class="form-group"><label>Adresse (AR)</label><input id="f_adresse" dir="rtl" placeholder="مساكن"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('stagModal')">Annuler</button>
+      <button class="btn btn-success btn-sm" id="stagSaveBtn" onclick="saveStagiaire()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROMO MANAGER MODAL -->
+<div class="overlay" id="promoModal">
+  <div class="modal" style="max-width:780px">
+    <div class="modal-head">
+      <div><h2>⚙️ Gestion des Promotions</h2></div>
+      <button class="modal-close" onclick="closeModal('promoModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-promos',this)">📋 Promotions</button>
+        <button class="tab-btn" onclick="switchTab('tab-new-promo',this)">➕ Nouvelle Promotion</button>
+      </div>
+      <div class="tab-panel active" id="tab-promos">
+        <div id="promoListUI"></div>
+      </div>
+      <div class="tab-panel" id="tab-new-promo">
+        <div class="form-grid" style="margin-bottom:14px">
+          <div class="form-group full"><label>Nom de la promotion</label><input id="np_label" placeholder="PROMOTION SEPTEMBRE 2026"></div>
+          <div class="form-group"><label>Clé interne</label><input id="np_key" placeholder="SEP2026" style="text-transform:uppercase;font-family:monospace"></div>
+          <div class="form-group"><label>Emoji</label>
+            <select id="np_emoji"><option>📅</option><option>🎓</option><option>📚</option><option>🏫</option></select>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px">
+          <button class="btn btn-outline btn-sm" onclick="switchTab('tab-promos',document.querySelector('.tab-btn'))">Annuler</button>
+          <button class="btn btn-success btn-sm" onclick="createPromotion()">✅ Créer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="ci" id="confirmIcon">⚠️</div>
+    <h3 id="confirmTitle">Confirmer</h3>
+    <p id="confirmMsg">Êtes-vous sûr ?</p>
+    <div class="confirm-btns">
+      <button class="btn btn-outline" onclick="closeConfirm()">Annuler</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT -->
+<div class="print-page" id="printPage"></div>
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let currentPromoKey = "{{ current_promo.key if current_promo else '' }}";
+let allStagiaires = {{ stagiaires | tojson | safe }};
+let filtered = [...allStagiaires];
+let currentPage = 1;
+const PER_PAGE = 20;
+let selected = new Set();
+let currentStagId = null;
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  buildStats();
+  render();
+});
+
+// ═══════════════════════════════════════════
+//  PROMO SWITCH
+// ═══════════════════════════════════════════
+function switchPromo(key) {
+  window.location.href = '/dashboard?promo=' + key;
+}
+
+// ═══════════════════════════════════════════
+//  SEARCH & FILTER
+// ═══════════════════════════════════════════
+let searchTimer;
+function onSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { currentPage = 1; applyFilters(); }, 200);
+}
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const g = document.getElementById('groupFilter').value;
+  const s = document.getElementById('specFilter').value;
+  filtered = allStagiaires.filter(d => {
+    const mq = !q || (d.nom||'').toLowerCase().includes(q) || (d.prenom||'').toLowerCase().includes(q)
+      || (d.cin||'').toLowerCase().includes(q) || (d.nom_ar||'').includes(q) || (d.prenom_ar||'').includes(q);
+    return mq && (!g || d.groupe===g) && (!s || d.specialite===s);
+  });
+  render();
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value='';
+  document.getElementById('groupFilter').value='';
+  document.getElementById('specFilter').value='';
+  filtered = [...allStagiaires];
+  currentPage = 1;
+  render();
+}
+
+function filterByGroup(g) {
+  document.getElementById('groupFilter').value=g;
+  onSearch();
+}
+
+// ═══════════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════════
+function buildStats() {
+  const groups = [...new Set(allStagiaires.map(d=>d.groupe).filter(Boolean))].sort();
+  let html = `<div class="stat-card" onclick="filterByGroup('')">
+    <div class="stat-num">${allStagiaires.length}</div>
+    <div class="stat-label">Total</div>
+    <div class="stat-group">Tous les groupes</div>
+  </div>`;
+  groups.forEach(g => {
+    const cnt = allStagiaires.filter(d=>d.groupe===g).length;
+    const emoji = groupEmoji(g);
+    html += `<div class="stat-card" onclick="filterByGroup('${g}')">
+      <div class="stat-num">${cnt}</div>
+      <div class="stat-label">${emoji} Stagiaires</div>
+      <div class="stat-group">${g}</div>
+    </div>`;
+  });
+  document.getElementById('statsStrip').innerHTML = html;
+}
+
+function groupEmoji(g) {
+  if(g.startsWith('EM')) return '⚡';
+  if(g.startsWith('IEB')) return '🔌';
+  if(g.startsWith('MI')) return '🔧';
+  if(g.startsWith('PVC')) return '🪟';
+  if(g.startsWith('TSM')) return '🔩';
+  if(g.startsWith('SM')) return '🔩';
+  return '👥';
+}
+
+function groupClass(g) {
+  if(!g) return 'g-default';
+  if(g.startsWith('EM')) return 'g-em';
+  if(g.startsWith('IEB')) return 'g-ieb';
+  if(g.startsWith('MI')) return 'g-mi';
+  if(g.startsWith('PVC')) return 'g-pvc';
+  if(g.startsWith('TSM')||g.startsWith('SM')) return 'g-tsm';
+  return 'g-default';
+}
+
+// ═══════════════════════════════════════════
+//  RENDER TABLE
+// ═══════════════════════════════════════════
+function render() {
+  const total = filtered.length;
+  document.getElementById('countBadge').textContent = total;
+  currentPage = Math.min(currentPage, Math.max(1, Math.ceil(total/PER_PAGE)));
+  const start = (currentPage-1)*PER_PAGE;
+  const page = filtered.slice(start, start+PER_PAGE);
+  const tbody = document.getElementById('tableBody');
+
+  if(!page.length) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="no-results"><div class="icon">🔍</div><strong>Aucun stagiaire trouvé</strong></div></td></tr>`;
+    document.getElementById('pagination').innerHTML='';
+    return;
+  }
+
+  tbody.innerHTML = page.map((s,i) => `<tr>
+    <td><input type="checkbox" ${selected.has(s.id)?'checked':''} onchange="toggleSelect(${s.id},this)"></td>
+    <td style="color:var(--text-muted);font-size:0.8rem">${start+i+1}</td>
+    <td style="font-weight:600">${s.nom} ${s.prenom}</td>
+    <td class="td-ar">${s.prenom_ar} ${s.nom_ar}</td>
+    <td><span class="td-cin">${s.cin}</span></td>
+    <td><span class="group-pill ${groupClass(s.groupe)}">${s.groupe}</span></td>
+    <td style="font-size:0.82rem;color:var(--text-muted)">${s.date_naiss}</td>
+    <td style="font-family:'Cairo',sans-serif;direction:rtl;font-size:0.84rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.specialite}</td>
+    <td><div class="actions">
+      <button class="btn btn-primary btn-sm" onclick="openDetail(${s.id})">👁 Détail</button>
+      <button class="btn btn-outline btn-sm" onclick="quickPrint(${s.id})">🖨️</button>
+    </div></td>
+  </tr>`).join('');
+
+  renderPagination(total);
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total/PER_PAGE);
+  if(pages<=1){document.getElementById('pagination').innerHTML='';return;}
+  let html='';
+  if(currentPage>1) html+=`<button class="page-btn" onclick="goPage(${currentPage-1})">‹</button>`;
+  for(let p=1;p<=pages;p++){
+    if(p===1||p===pages||Math.abs(p-currentPage)<=1)
+      html+=`<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+    else if(Math.abs(p-currentPage)===2) html+=`<span class="page-info">…</span>`;
+  }
+  if(currentPage<pages) html+=`<button class="page-btn" onclick="goPage(${currentPage+1})">›</button>`;
+  html+=`<span class="page-info">${total} stagiaires</span>`;
+  document.getElementById('pagination').innerHTML=html;
+}
+function goPage(p){currentPage=p;render();}
+
+// SELECT
+function toggleSelect(id,cb){ if(cb.checked) selected.add(id); else selected.delete(id); }
+function toggleAll(cb){ const page=filtered.slice((currentPage-1)*PER_PAGE,currentPage*PER_PAGE); page.forEach(s=>cb.checked?selected.add(s.id):selected.delete(s.id)); render(); }
+function selectAll(){ filtered.forEach(s=>selected.add(s.id)); render(); }
+
+// ═══════════════════════════════════════════
+//  DETAIL
+// ═══════════════════════════════════════════
+function openDetail(id) {
+  const s = allStagiaires.find(x=>x.id===id);
+  if(!s) return;
+  currentStagId = id;
+  document.getElementById('modalTitle').textContent = s.nom+' '+s.prenom;
+  document.getElementById('modalSubTitle').textContent = s.prenom_ar+' '+s.nom_ar;
+  document.getElementById('infoGrid').innerHTML = `
+    <div class="info-item"><div class="info-label">CIN</div><div class="info-value" style="font-family:monospace">${s.cin||'—'}</div></div>
+    <div class="info-item"><div class="info-label">Groupe</div><div class="info-value"><span class="group-pill ${groupClass(s.groupe)}">${s.groupe||'—'}</span></div></div>
+    <div class="info-item"><div class="info-label">Date Naissance</div><div class="info-value">${s.date_naiss||'—'}</div></div>
+    <div class="info-item"><div class="info-label">Lieu Naissance</div><div class="info-value">${s.lieu_naiss||'—'}</div></div>
+    <div class="info-item"><div class="info-label">Date Entrée</div><div class="info-value">${s.date_entree||'—'}</div></div>
+    <div class="info-item"><div class="info-label">Date Sortie</div><div class="info-value">${s.date_sortie||'—'}</div></div>
+    <div class="info-item full"><div class="info-label">Spécialité</div><div class="info-value ar">${s.specialite||'—'}</div></div>
+    <div class="info-item"><div class="info-label">Adresse</div><div class="info-value ar">${s.adresse||'—'}</div></div>
+    <div class="info-item"><div class="info-label">Téléphone</div><div class="info-value">${s.telephone||'—'}</div></div>
+    <div class="info-item full"><div class="info-label">Niveau Scolaire</div><div class="info-value">${s.niveau||'—'}</div></div>`;
+  openModal('detailModal');
+}
+
+// ═══════════════════════════════════════════
+//  ADD / EDIT STAGIAIRE
+// ═══════════════════════════════════════════
+function openAddStagiaire() {
+  document.getElementById('stagModalTitle').textContent='➕ Ajouter un Stagiaire';
+  document.getElementById('editStagId').value='';
+  ['nom','prenom','nom_ar','prenom_ar','cin','naiss','lieu','entree','sortie','spec','groupe','niveau','tel','adresse'].forEach(f=>document.getElementById('f_'+f).value='');
+  document.getElementById('f_genre').value='Garçon';
+  openModal('stagModal');
+}
+
+function openEditStagiaire() {
+  const s = allStagiaires.find(x=>x.id===currentStagId);
+  if(!s) return;
+  closeModal('detailModal');
+  document.getElementById('stagModalTitle').textContent='✏️ Modifier le Stagiaire';
+  document.getElementById('editStagId').value=s.id;
+  document.getElementById('f_nom').value=s.nom||'';
+  document.getElementById('f_prenom').value=s.prenom||'';
+  document.getElementById('f_nom_ar').value=s.nom_ar||'';
+  document.getElementById('f_prenom_ar').value=s.prenom_ar||'';
+  document.getElementById('f_cin').value=s.cin||'';
+  document.getElementById('f_genre').value=s.genre||'Garçon';
+  document.getElementById('f_naiss').value=s.date_naiss||'';
+  document.getElementById('f_lieu').value=s.lieu_naiss||'';
+  document.getElementById('f_entree').value=s.date_entree||'';
+  document.getElementById('f_sortie').value=s.date_sortie||'';
+  document.getElementById('f_spec').value=s.specialite||'';
+  document.getElementById('f_groupe').value=s.groupe||'';
+  document.getElementById('f_niveau').value=s.niveau||'';
+  document.getElementById('f_tel').value=s.telephone||'';
+  document.getElementById('f_adresse').value=s.adresse||'';
+  openModal('stagModal');
+}
+
+async function saveStagiaire() {
+  const id = document.getElementById('editStagId').value;
+  const payload = {
+    promotion_key: currentPromoKey,
+    nom: document.getElementById('f_nom').value.trim().toUpperCase(),
+    prenom: document.getElementById('f_prenom').value.trim().toUpperCase(),
+    nom_ar: document.getElementById('f_nom_ar').value.trim(),
+    prenom_ar: document.getElementById('f_prenom_ar').value.trim(),
+    cin: document.getElementById('f_cin').value.trim(),
+    genre: document.getElementById('f_genre').value,
+    date_naiss: document.getElementById('f_naiss').value.trim(),
+    lieu_naiss: document.getElementById('f_lieu').value.trim(),
+    date_entree: document.getElementById('f_entree').value.trim(),
+    date_sortie: document.getElementById('f_sortie').value.trim(),
+    specialite: document.getElementById('f_spec').value.trim(),
+    groupe: document.getElementById('f_groupe').value.trim(),
+    niveau: document.getElementById('f_niveau').value.trim(),
+    telephone: document.getElementById('f_tel').value.trim(),
+    adresse: document.getElementById('f_adresse').value.trim(),
+  };
+  if(!payload.nom||!payload.prenom) { showToast('⚠️ Nom et Prénom obligatoires'); return; }
+
+  const url = id ? `/api/stagiaire/edit/${id}` : '/api/stagiaire/add';
+  const res = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const data = await res.json();
+  if(data.success||data.id) {
+    showToast(id ? '✅ Stagiaire modifié !' : '✅ Stagiaire ajouté !');
+    closeModal('stagModal');
+    setTimeout(()=>location.reload(),800);
+  } else { showToast('❌ Erreur : '+data.error); }
+}
+
+// DELETE STAGIAIRE
+function confirmDeleteStagiaire() {
+  const s = allStagiaires.find(x=>x.id===currentStagId);
+  if(!s) return;
+  showConfirm('🗑️','Supprimer le stagiaire ?',`Voulez-vous supprimer ${s.nom} ${s.prenom} ? Cette action est irréversible.`, async ()=>{
+    const res = await fetch(`/api/stagiaire/delete/${currentStagId}`,{method:'POST'});
+    const data = await res.json();
+    if(data.success){showToast('🗑️ Stagiaire supprimé');closeModal('detailModal');setTimeout(()=>location.reload(),800);}
+  });
+}
+
+// ═══════════════════════════════════════════
+//  PROMOTIONS
+// ═══════════════════════════════════════════
+function openPromoManager() {
+  renderPromoList();
+  openModal('promoModal');
+}
+
+function renderPromoList() {
+  fetch('/api/promotions').then(r=>r.json()).then(promos => {
+    const html = promos.map(p => `
+      <div class="promo-item ${p.key===currentPromoKey?'active':''}">
+        <span style="font-size:1.4rem">${p.emoji}</span>
+        <div class="promo-info">
+          <div class="promo-label">${p.label} ${p.key===currentPromoKey?'<span class="badge-active">✔ Active</span>':''}</div>
+          <div class="promo-meta">🗝 ${p.key} &nbsp;|&nbsp; 👥 ${p.count} stagiaire${p.count>1?'s':''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-accent btn-sm" onclick="switchPromo('${p.key}')">📂 Ouvrir</button>
+          <button class="btn btn-outline btn-sm" onclick="editPromo(${p.id},'${p.label}','${p.emoji}')">✏️</button>
+          ${p.key!==currentPromoKey?`<button class="btn btn-danger btn-sm" onclick="askDeletePromo(${p.id},'${p.label}')">🗑</button>`:''}
+        </div>
+      </div>`).join('');
+    document.getElementById('promoListUI').innerHTML = html || '<p style="color:var(--text-muted);text-align:center;padding:20px">Aucune promotion</p>';
+  });
+}
+
+async function createPromotion() {
+  const label = document.getElementById('np_label').value.trim().toUpperCase();
+  const key = document.getElementById('np_key').value.trim().toUpperCase().replace(/\s+/g,'');
+  const emoji = document.getElementById('np_emoji').value;
+  if(!label||!key){showToast('⚠️ Remplissez tous les champs');return;}
+  const res = await fetch('/api/promotion/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,label,emoji})});
+  const data = await res.json();
+  if(data.success){
+    showToast('✅ Promotion créée !');
+    document.getElementById('np_label').value='';
+    document.getElementById('np_key').value='';
+    switchTab('tab-promos',document.querySelector('.tab-btn'));
+    setTimeout(()=>location.reload(),800);
+  } else { showToast('❌ '+data.error); }
+}
+
+function editPromo(id, currentLabel, currentEmoji) {
+  const newLabel = prompt('Nouveau nom :', currentLabel);
+  if(!newLabel) return;
+  fetch(`/api/promotion/edit/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({label:newLabel,emoji:currentEmoji})})
+    .then(r=>r.json()).then(d=>{if(d.success){showToast('✅ Renommée');setTimeout(()=>location.reload(),800);}});
+}
+
+function askDeletePromo(id, label) {
+  showConfirm('🗑️','Supprimer la promotion ?',`Supprimer "${label}" et tous ses stagiaires ? Irréversible.`, async ()=>{
+    const res = await fetch(`/api/promotion/delete/${id}`,{method:'POST'});
+    const d = await res.json();
+    if(d.success){showToast('🗑️ Promotion supprimée');setTimeout(()=>location.reload(),800);}
+  });
+}
+
+// ═══════════════════════════════════════════
+//  PRINT ATTESTATIONS
+// ═══════════════════════════════════════════
+function printAttestation(type){ if(currentStagId) generateAndPrint([allStagiaires.find(x=>x.id===currentStagId)],type); }
+function quickPrint(id){ generateAndPrint([allStagiaires.find(x=>x.id===id)],'inscription'); }
+function printSelected(type){ const items=allStagiaires.filter(s=>selected.has(s.id)); if(!items.length){showToast('⚠️ Sélectionnez des stagiaires');return;} generateAndPrint(items,type); }
+
+function printListGroupe() {
+  const g = document.getElementById('groupFilter').value;
+  const list = g ? filtered : allStagiaires;
+  const centre = "{{ user.centre_name }}";
+  const promo = "{{ current_promo.label if current_promo else '' }}";
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Tajawal',sans-serif;padding:20px;font-size:12px}
+    h2{text-align:center;margin-bottom:4px;font-size:14px}
+    p{text-align:center;color:#555;margin-bottom:12px;font-size:11px}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #333;padding:6px 8px;text-align:left}
+    th{background:#0f2744;color:white}
+    .ar{font-family:'Cairo',sans-serif;direction:rtl;text-align:right}
+    @media print{body{padding:0}}
+  </style></head><body>
+  <h2>${centre}</h2>
+  <p>${promo} ${g?'— Groupe '+g:''}</p>
+  <table><thead><tr><th>#</th><th>Nom & Prénom</th><th class="ar">الاسم واللقب</th><th>CIN</th><th>Groupe</th><th>Spécialité</th></tr></thead>
+  <tbody>${list.map((s,i)=>`<tr><td>${i+1}</td><td>${s.nom} ${s.prenom}</td><td class="ar">${s.prenom_ar} ${s.nom_ar}</td><td>${s.cin}</td><td>${s.groupe}</td><td class="ar">${s.specialite}</td></tr>`).join('')}
+  </tbody></table></body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+
+function generateAndPrint(stagiaires, type) {
+  const centre = "{{ user.centre_name }}";
+  const centreCode = "{{ user.centre_code }}";
+  const promo = "{{ current_promo.label if current_promo else '' }}";
+  const today = new Date().toLocaleDateString('fr-TN');
+  const titles = {
+    inscription: { fr:'ATTESTATION D\'INSCRIPTION', ar:'شهادة ترسيم' },
+    presence: { fr:'ATTESTATION DE PRÉSENCE', ar:'شهادة حضور' },
+    reussite: { fr:'ATTESTATION DE RÉUSSITE', ar:'شهادة نجاح' }
+  };
+  const t = titles[type];
+  const pages = stagiaires.map(s => `
+    <div style="border:2px solid #0f2744;padding:30px;margin-bottom:20px;page-break-after:always;font-family:'Tajawal',sans-serif">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:1.4rem;font-weight:900;color:#0f2744">${t.fr}</div>
+        <div style="font-size:1.2rem;font-family:'Cairo',sans-serif;direction:rtl;color:#0f2744">${t.ar}</div>
+        <div style="border-bottom:2px solid #0ea5e9;margin:10px auto;width:200px"></div>
+      </div>
+      <div style="text-align:center;margin-bottom:20px;font-size:0.95rem">
+        <p>Le directeur du <strong>${centre}</strong> (Code: ${centreCode})</p>
+        <p style="font-family:'Cairo',sans-serif;direction:rtl">يشهد مدير <strong>${centre}</strong></p>
+      </div>
+      <div style="background:#f8fafc;border-radius:10px;padding:16px;margin-bottom:20px">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+          <tr><td style="padding:6px;font-weight:700;width:40%">Nom & Prénom:</td><td style="padding:6px">${s.nom} ${s.prenom}</td></tr>
+          <tr><td style="padding:6px;font-weight:700">الاسم واللقب:</td><td style="padding:6px;font-family:'Cairo',sans-serif;direction:rtl">${s.prenom_ar} ${s.nom_ar}</td></tr>
+          <tr><td style="padding:6px;font-weight:700">CIN:</td><td style="padding:6px;font-family:monospace">${s.cin}</td></tr>
+          <tr><td style="padding:6px;font-weight:700">Groupe:</td><td style="padding:6px">${s.groupe}</td></tr>
+          <tr><td style="padding:6px;font-weight:700">Spécialité:</td><td style="padding:6px;font-family:'Cairo',sans-serif;direction:rtl">${s.specialite}</td></tr>
+          <tr><td style="padding:6px;font-weight:700">Date Entrée:</td><td style="padding:6px">${s.date_entree}</td></tr>
+          <tr><td style="padding:6px;font-weight:700">Date Sortie:</td><td style="padding:6px">${s.date_sortie}</td></tr>
+          <tr><td style="padding:6px;font-weight:700">Promotion:</td><td style="padding:6px">${promo}</td></tr>
+        </table>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:30px;font-size:0.88rem">
+        <div>Msaken, le ${today}</div>
+        <div style="text-align:right"><div>Signature & Cachet</div><div style="margin-top:40px;border-top:1px solid #333;width:150px"></div></div>
+      </div>
+    </div>`).join('');
+
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>@media print{@page{margin:15mm}body{padding:0}}</style>
+    </head><body>${pages}</body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 800);
+}
+
+// ═══════════════════════════════════════════
+//  MODALS & UI HELPERS
+// ═══════════════════════════════════════════
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+let confirmCb=null;
+function showConfirm(icon,title,msg,cb){
+  document.getElementById('confirmIcon').textContent=icon;
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').textContent=msg;
+  confirmCb=cb;
+  document.getElementById('confirmOkBtn').onclick=()=>{closeConfirm();if(confirmCb)confirmCb();};
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm(){ document.getElementById('confirmOverlay').classList.remove('open'); }
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
