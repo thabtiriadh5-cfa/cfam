@@ -5,7 +5,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os, json
 
-app = Flask(__name__)
+app = Flask(__name__)app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///cfam.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'cfam-msaken-2024-secret')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///cfam.db')
 if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgresql+psycopg://'):
