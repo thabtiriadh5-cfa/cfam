@@ -1,49 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, make_response
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
-import os, json
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'cfam-msaken-2024-secret')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///cfam.db')
-if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgres://'):
-    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace('postgres://', 'postgresql://', 1)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-
-# ═══════════════════════════════════════════
-#  MODELS
-# ═══════════════════════════════════════════
-
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
-    centre_name = db.Column(db.String(200), default='Centre de Formation et d\'Apprentissage MSAKEN')
-    centre_code = db.Column(db.String(20), default='51542')
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-class Promotion(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(20), unique=True, nullable=False)
-    label = db.Column(db.String(100), nullable=False)
-    emoji = db.Column(db.String(10), default='📅')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    stagiaires = db.relationship('Stagiaire', backref='promotion', lazy=True, cascade='all, delete-orphan')
-
-class Stagiaire(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    promotion_id = db.Column(db.Integer, db.ForeignKey('promotion.id'), nullable=False)
     cin = db.Column(db.String(30))
     nom = db.Column(db.String(100))
     prenom = db.Column(db.String(100))
