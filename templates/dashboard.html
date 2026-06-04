@@ -769,52 +769,56 @@ function printListGroupe() {
 }
 
 function generateAndPrint(stagiaires, type) {
-  const centre = "{{ user.centre_name }}";
-  const centreCode = "{{ user.centre_code }}";
+  const centre = "Centre de Formation et d'Apprentissage MSAKEN";
+  const centreCode = "51542";
   const promo = "{{ current_promo.label if current_promo else '' }}";
   const today = new Date().toLocaleDateString('fr-TN');
+  
   const titles = {
     inscription: { fr:'ATTESTATION D\'INSCRIPTION', ar:'شهادة ترسيم' },
     presence: { fr:'ATTESTATION DE PRÉSENCE', ar:'شهادة حضور' },
     reussite: { fr:'ATTESTATION DE RÉUSSITE', ar:'شهادة نجاح' }
   };
+  
   const t = titles[type];
+  
   const pages = stagiaires.map(s => `
-    <div style="border:2px solid #0f2744;padding:30px;margin-bottom:20px;page-break-after:always;font-family:'Tajawal',sans-serif">
-      <div style="text-align:center;margin-bottom:20px">
-        <div style="font-size:1.4rem;font-weight:900;color:#0f2744">${t.fr}</div>
-        <div style="font-size:1.2rem;font-family:'Cairo',sans-serif;direction:rtl;color:#0f2744">${t.ar}</div>
-        <div style="border-bottom:2px solid #0ea5e9;margin:10px auto;width:200px"></div>
+    <div style="border: 3px solid #0f2744; padding: 40px; margin-bottom: 30px; page-break-after: always; font-family: 'Arial', sans-serif; min-height: 100vh; background: white;">
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #0ea5e9; padding-bottom: 20px;">
+        <div style="font-size: 1.8rem; font-weight: bold; color: #0f2744; letter-spacing: 1px;">${t.fr}</div>
+        <div style="font-size: 1.4rem; font-family: 'Cairo', sans-serif; direction: rtl; color: #0f2744; margin-top: 6px;">${t.ar}</div>
       </div>
-      <div style="text-align:center;margin-bottom:20px;font-size:0.95rem">
-        <p>Le directeur du <strong>${centre}</strong> (Code: ${centreCode})</p>
-        <p style="font-family:'Cairo',sans-serif;direction:rtl">يشهد مدير <strong>${centre}</strong></p>
+      <div style="text-align: center; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.8;">
+        <p><strong>Le directeur du ${centre}</strong></p>
+        <p style="margin-top: 10px;"><strong>Code Centre : ${centreCode}</strong></p>
+        <p style="font-family: 'Cairo', sans-serif; direction: rtl; margin-top: 15px;">يشهد مدير ${centre}</p>
       </div>
-      <div style="background:#f8fafc;border-radius:10px;padding:16px;margin-bottom:20px">
-        <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
-          <tr><td style="padding:6px;font-weight:700;width:40%">Nom & Prénom:</td><td style="padding:6px">${s.nom} ${s.prenom}</td></tr>
-          <tr><td style="padding:6px;font-weight:700">الاسم واللقب:</td><td style="padding:6px;font-family:'Cairo',sans-serif;direction:rtl">${s.prenom_ar} ${s.nom_ar}</td></tr>
-          <tr><td style="padding:6px;font-weight:700">CIN:</td><td style="padding:6px;font-family:monospace">${s.cin}</td></tr>
-          <tr><td style="padding:6px;font-weight:700">Groupe:</td><td style="padding:6px">${s.groupe}</td></tr>
-          <tr><td style="padding:6px;font-weight:700">Spécialité:</td><td style="padding:6px;font-family:'Cairo',sans-serif;direction:rtl">${s.specialite}</td></tr>
-          <tr><td style="padding:6px;font-weight:700">Date Entrée:</td><td style="padding:6px">${s.date_entree}</td></tr>
-          <tr><td style="padding:6px;font-weight:700">Date Sortie:</td><td style="padding:6px">${s.date_sortie}</td></tr>
-          <tr><td style="padding:6px;font-weight:700">Promotion:</td><td style="padding:6px">${promo}</td></tr>
+      <div style="background: #f8fafc; border: 1.5px solid #0ea5e9; border-radius: 10px; padding: 20px; margin-bottom: 30px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">Nom & Prénom :</td><td style="padding: 10px;">${s.nom} ${s.prenom}</td></tr>
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">الاسم واللقب :</td><td style="padding: 10px; font-family: 'Cairo', sans-serif; direction: rtl;">${s.prenom_ar} ${s.nom_ar}</td></tr>
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">CIN :</td><td style="padding: 10px; font-family: monospace;">${s.cin}</td></tr>
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">Genre :</td><td style="padding: 10px;">${s.genre}</td></tr>
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">Date de naissance :</td><td style="padding: 10px;">${s.date_naiss}</td></tr>
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">Lieu de naissance :</td><td style="padding: 10px;">${s.lieu_naiss}</td></tr>
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">Groupe :</td><td style="padding: 10px;">${s.groupe}</td></tr>
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">Spécialité :</td><td style="padding: 10px; font-family: 'Cairo', sans-serif; direction: rtl;">${s.specialite}</td></tr>
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">Niveau scolaire :</td><td style="padding: 10px;">${s.niveau}</td></tr>
+          <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; font-weight: bold; color: #0f2744;">Date d'entrée :</td><td style="padding: 10px;">${s.date_entree}</td></tr>
+          <tr><td style="padding: 10px; font-weight: bold; color: #0f2744;">Date de sortie :</td><td style="padding: 10px;">${s.date_sortie}</td></tr>
         </table>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-top:30px;font-size:0.88rem">
-        <div>Msaken, le ${today}</div>
-        <div style="text-align:right"><div>Signature & Cachet</div><div style="margin-top:40px;border-top:1px solid #333;width:150px"></div></div>
+      <div style="text-align: center; margin-bottom: 40px; font-size: 0.9rem; padding: 15px; background: #eff6ff; border-radius: 8px;"><strong>Promotion :</strong> ${promo}</div>
+      <div style="margin-top: 50px; display: flex; justify-content: space-between; font-size: 0.88rem;">
+        <div><p>Msaken, le ${today}</p></div>
+        <div style="text-align: right;"><p style="margin-bottom: 50px;"><strong>Signature & Cachet</strong></p><div style="border-top: 2px solid #333; width: 180px; margin-top: 60px;"></div></div>
       </div>
     </div>`).join('');
 
   const w = window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <style>@media print{@page{margin:15mm}body{padding:0}}</style>
-    </head><body>${pages}</body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Attestations</title><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet"><style>body{margin:0;padding:0}@media print{@page{margin:0}body{margin:0}}</style></head><body>${pages}</body></html>`);
   w.document.close();
-  setTimeout(()=>w.print(), 800);
+  setTimeout(() => w.print(), 800);
 }
 
 // ═══════════════════════════════════════════
