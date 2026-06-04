@@ -1,26 +1,20 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, make_response
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os, json
 
-app = Flask(__name__)app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///cfam.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'cfam-msaken-2024-secret')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///cfam.db')
-if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgresql+psycopg://'):
-    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace('postgresql+psycopg://', 'postgresql://', 1)
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'cfam-msaken-2024-secret-key')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cfam.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# ═══════════════════════════════════════════
-#  MODELS
-# ═══════════════════════════════════════════
-
+# MODELS
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -85,10 +79,7 @@ class Stagiaire(db.Model):
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
-# ═══════════════════════════════════════════
-#  ROUTES AUTH
-# ═══════════════════════════════════════════
-
+# ROUTES AUTH
 @app.route('/')
 def index():
     if current_user.is_authenticated:
@@ -116,10 +107,7 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-# ═══════════════════════════════════════════
-#  DASHBOARD
-# ═══════════════════════════════════════════
-
+# DASHBOARD
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -129,7 +117,6 @@ def dashboard():
         promo_key = promotions[0].key
     current_promo = Promotion.query.filter_by(key=promo_key).first() if promo_key else None
     stagiaires = current_promo.stagiaires if current_promo else []
-    # Convert to dicts for JSON serialization
     stagiaires_dicts = [s.to_dict() for s in stagiaires]
     groups = sorted(set(s.groupe for s in stagiaires if s.groupe))
     specs = sorted(set(s.specialite for s in stagiaires if s.specialite))
@@ -142,10 +129,7 @@ def dashboard():
         user=current_user
     )
 
-# ═══════════════════════════════════════════
-#  API STAGIAIRES
-# ═══════════════════════════════════════════
-
+# API STAGIAIRES
 @app.route('/api/stagiaires')
 @login_required
 def api_stagiaires():
@@ -233,10 +217,7 @@ def api_delete_stagiaire(sid):
     db.session.commit()
     return jsonify({'success': True})
 
-# ═══════════════════════════════════════════
-#  API PROMOTIONS
-# ═══════════════════════════════════════════
-
+# API PROMOTIONS
 @app.route('/api/promotions')
 @login_required
 def api_promotions():
@@ -282,10 +263,7 @@ def api_delete_promotion(pid):
     db.session.commit()
     return jsonify({'success': True})
 
-# ═══════════════════════════════════════════
-#  INIT DB + SEED
-# ═══════════════════════════════════════════
-
+# INIT DB + SEED
 def seed_db():
     if User.query.count() == 0:
         u = User(username='51541', centre_name='Centre de Formation et d\'Apprentissage MSAKEN', centre_code='51542')
